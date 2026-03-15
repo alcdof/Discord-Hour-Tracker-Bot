@@ -5,9 +5,14 @@ from discord import app_commands
 from dotenv import load_dotenv
 import os
 from typing import Optional
+import google.generativeai as genai
+
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-flash-latest")
 
 intents = discord.Intents.all()
 
@@ -185,5 +190,17 @@ async def time(interaction: discord.Interaction):
             else:
                 await interaction.response.send_message("You have just entered the channel.")
 
+@tree.command(
+    name="ai",
+    description="ask Gemini.",
+    guild=discord.Object(id=GUILD_ID)
+)
+async def ai(interaction: discord.Interaction, question: str):
+    
+    await interaction.response.defer()
+
+    response = model.generate_content(question)
+
+    await interaction.followup.send(response.text)
 
 bot.run(TOKEN)
