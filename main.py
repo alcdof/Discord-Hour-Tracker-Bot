@@ -53,11 +53,11 @@ async def clear(ctx, value: int=10, user: discord.Member=None):
         return msg.author == user
     
     if user is None:
-        deletadas = await ctx.channel.purge(limit=value)
+        deleted = await ctx.channel.purge(limit=value)
     else: 
-        deletadas = await ctx.channel.purge(limit=value, check=check)
+        deleted = await ctx.channel.purge(limit=value, check=check)
 
-    await ctx.send(f"{len(deletadas)} deleted messages.")
+    await ctx.send(f"{len(deleted)} deleted messages.")
 
 
 # entra no canal em que o usuário está
