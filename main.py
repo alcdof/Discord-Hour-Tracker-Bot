@@ -15,12 +15,7 @@ async def on_ready():
 @bot.command()
 async def ping(ctx):
     ping = round(bot.latency * 1000)
-    await ctx.reply(f"Pong!    🏓    {ping} ms")
-
-# salve (teste)
-@bot.command()
-async def salve(ctx):
-    await ctx.reply("Salve!")
+    await ctx.reply(f"Pong!\t🏓\t{ping} ms")
 
 #contador simples: aumenta e diminui
 @bot.command()
@@ -40,7 +35,7 @@ async def contador(ctx, action=None, value: int=None):
             cont -= value
 
     elif action == "reset":
-        cont == 0
+        cont = 0
 
     await ctx.reply(f"Contador: {cont}")
 
@@ -81,7 +76,7 @@ async def leave(ctx):
     await ctx.voice_client.disconnect()
     await ctx.reply(f"Saí do canal **{channel}** com sucesso!")
 
-
+# contador de tempo
 @bot.event
 async def on_voice_state_update(member, before, after):
     # entrou no canal -> inicia contador
