@@ -94,15 +94,24 @@ async def clear(
     value: Optional[int] = 10, 
     user: Optional[discord.Member] = None
 ):
+    
+    await interaction.response.defer()
+
+    interaction_message = await interaction.original_response()
+
     def check(msg):
+        if msg.id == interaction_message.id:
+            return False
+        if user is None:
+            return True
         return msg.author == user
     
-    if user is None:
-        deleted = await interaction.channel.purge(limit=value)
-    else: 
-        deleted = await interaction.channel.purge(limit=value, check=check)
+    deleted = await interaction.channel.purge(limit=value, check=check)
 
-    await interaction.response.send_message(f"{len(deleted)} deleted messages.")
+    await interaction.followup.send(
+        f"{len(deleted)} deleted messages.",
+        ephemeral=True
+        )
 
 # entra no canal em que o usuário está
 @tree.command(
