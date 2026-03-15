@@ -1,15 +1,22 @@
 import discord
 import datetime
 from discord.ext import commands
+from dotenv import load_dotenv
+import os
 
 intents = discord.Intents.all()
 bot = commands.Bot(".", intents=intents)
 cont = 0
+
+
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
+
 times = {}
 
 @bot.event
 async def on_ready():
-    print("Bot inicializado com sucesso.")
+    print("Bot successfully initialized.")
 
 # ping
 @bot.command()
@@ -37,7 +44,7 @@ async def contador(ctx, action=None, value: int=None):
     elif action == "reset":
         cont = 0
 
-    await ctx.reply(f"Contador: {cont}")
+    await ctx.reply(f"Counter: {cont}")
 
 # limpa o chat
 @bot.command()
@@ -50,31 +57,31 @@ async def clear(ctx, value: int=10, user: discord.Member=None):
     else: 
         deletadas = await ctx.channel.purge(limit=value, check=check)
 
-    await ctx.send(f"{len(deletadas)} mensagens apagadas.")
+    await ctx.send(f"{len(deletadas)} deleted messages.")
 
 
 # entra no canal em que o usuário está
 @bot.command()
 async def connect(ctx):
     if ctx.author.voice is None:
-        await ctx.reply(f"Você precisa estar em um canal de voz.")
+        await ctx.reply(f"You need to be on a voice chat.")
         return
     
     channel = ctx.author.voice.channel
     await channel.connect()
-    await ctx.reply(f"Entrei com sucesso no canal **{channel}**!")
+    await ctx.reply(f"I successfully joined the **{channel}** channel!")
 
 # sai do canal em que o usuário está
 @bot.command()
 async def leave(ctx):
     if ctx.voice_client is None:
-        await ctx.reply(f"Eu não estou em um canal de voz.")
+        await ctx.reply(f"I'm not on a voice channel.")
         return
 
     channel = ctx.author.voice.channel
 
     await ctx.voice_client.disconnect()
-    await ctx.reply(f"Saí do canal **{channel}** com sucesso!")
+    await ctx.reply(f"I successfully left the **{channel}** channel!")
 
 # contador de tempo
 @bot.event
@@ -91,7 +98,7 @@ async def on_voice_state_update(member, before, after):
 @bot.command()
 async def time(ctx):
     if ctx.author.id not in times:
-        await ctx.reply("Você não entrou em um canal recentemente.")
+        await ctx.reply("You've not entered any voice chat recently.")
         return
     
     now = datetime.datetime.now()
@@ -103,28 +110,29 @@ async def time(ctx):
     minutes = (total_seconds % 3600) // 60
     seconds = total_seconds % 60    
 
+    # TODO: traduzir isso dps, que preguiça
     if hours > 0:
         if minutes > 0:
             if seconds > 0:
-                await ctx.reply(f"Você está no canal há {hours}h, {minutes}min e {seconds}s.")
+                await ctx.reply(f"You have been in the channel for {hours}h, {minutes}min and {seconds}s.")
             else:
-                await ctx.reply(f"Você está no canal há {hours}h e {minutes}min.")
+                await ctx.reply(f"You have been in the channel for {hours}h and {minutes}min.")
         else:
             if seconds > 0:
-                await ctx.reply(f"Você está no canal há {hours}h e {seconds}s.")
+                await ctx.reply(f"You have been in the channel for {hours}h and {seconds}s.")
             else:
-                await ctx.reply(f"Você está no canal há {hours}h.")
+                await ctx.reply(f"You have been in the channel for {hours}h.")
     else:
         if minutes > 0:
             if seconds > 0:
-                await ctx.reply(f"Você está no canal há {minutes}min e {seconds}s.")
+                await ctx.reply(f"You have been in the channel for {minutes}min and {seconds}s.")
             else:
-                await ctx.reply(f"Você está no canal há {minutes}min.")
+                await ctx.reply(f"You have been in the channel for {minutes}min.")
         else:
             if seconds > 0:
-                await ctx.reply(f"Você está no canal há {seconds}s.")
+                await ctx.reply(f"You have been in the channel for {seconds}s.")
             else:
-                return
+                await ctx.reply("You have just entered the channel.")
 
 
-bot.run("Seu_Token")
+bot.run(TOKEN)
